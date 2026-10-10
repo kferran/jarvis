@@ -760,3 +760,15 @@ commands_section() { awk '$0 == "## Commands" { on = 1; next } /^## / { on = 0 }
   grep -qF 'aborts a conflicted merge (`git merge --abort`), leaving the vault unchanged' README.md
   grep -qF 'later updates keep it disabled' README.md
 }
+
+@test "inbox triage: /setup asks for it and checks the connector; the README and the config schema describe it (#99)" {
+  sec="$(setup_section '6b. Meetings')"
+  [[ "$sec" == *'watch the inbox during the day for mail that needs you (`triage_enabled`, default `false`)'* ]]
+  [[ "$sec" == *'system/scripts/triage_fetch.sh --check'* ]]
+  [[ "$sec" == *'`triage_partition`'* ]]
+  grep -qF '**Inbox triage.**' README.md
+  grep -qF 'The links and dates come from the search results, never from the model'"'"'s words.' README.md
+  grep -qF 'triage_enabled: {kind: bool, default: "false"}' system/schemas/config.md
+  grep -qF 'triage_partition: {kind: enum, values: [work, personal]}' system/schemas/config.md
+  grep -qF 'triage_enabled: "false"' system/config.example.md
+}
